@@ -100,7 +100,7 @@ groovy MovieCutter.groovy -i input.mp4 -r 00:01:00-00:02:00,00:03:00-00:04:00 -s
         } else {
             File tmpFile = File.createTempFile('movieMerge', '.txt')
             tmpFile.text = tmpFiles.collect { "file '${it.absoluteFile}'" }.join('\n')
-            run(options, 'ffmpeg', '-f', 'concat', '-safe', '0', '-i', tmpFile.absolutePath, '-c', 'copy', outputFile.absolutePath)
+            run(options, 'ffmpeg', '-nostdin', '-f', 'concat', '-safe', '0', '-i', tmpFile.absolutePath, '-c', 'copy', outputFile.absolutePath)
             tmpFiles.each { assert it.delete() }
         }
     }
@@ -111,7 +111,7 @@ groovy MovieCutter.groovy -i input.mp4 -r 00:01:00-00:02:00,00:03:00-00:04:00 -s
         List<Interval> intervals = keepModeIntervals(options, inputFile)
         return intervals.withIndex().collect { Interval interval, int index ->
             File tmp = addExtensionPrefix(inputFile, index.toString())
-            List args = ['ffmpeg', '-i', inputFile.absolutePath, '-ss', interval.start, '-to', interval.end]
+            List args = ['ffmpeg', '-nostdin', '-i', inputFile.absolutePath, '-ss', interval.start, '-to', interval.end]
             if (isFastAlgorithm(options)) {
                 args += ['-c', 'copy']
             }
